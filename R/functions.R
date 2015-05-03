@@ -7,7 +7,7 @@
 #' Note you can use raw_data$myvar in formula to refer to version of an earlier variable which has already been changed by a formula.
 #' Use label2 for another language, create more if you want
 #'
-#'
+#' @import XLConnect
 #' @name reprojuice
 #'
 #'
@@ -47,11 +47,11 @@ reprojuice=function(dataname="data",ftype="xl",type="",method="quicker",onlyLoad
 
     } else {
       case="oldfile"
-      wb <- loadWorkbook(propfilename)
-      sheets <<- getSheets(wb)
+      wb <- XLConnect::loadWorkbook(propfilename)
+      sheets <<- XLConnect::getSheets(wb)
       #
       #read in worksheet and create list current_data to receive the this's from raw_data
-      propsheet= readWorksheetFromFile(propfilename,sheet="props",rownames=NULL,colTypes="character",startCol=1)
+      propsheet= XLConnect::readWorksheetFromFile(propfilename,sheet="props",rownames=NULL,colTypes="character",startCol=1)
       propsheet=propsheet[!is.na(propsheet[,1]),]
       rownames(propsheet)=make.names(propsheet[,1],unique=T)
       colnames(propsheet)[1]="varnames"
@@ -105,7 +105,7 @@ reprojuice=function(dataname="data",ftype="xl",type="",method="quicker",onlyLoad
               concord=data.frame("output"=names(mytable),"input"=names(mytable))
             }
             if(tabname %in% sheets) {  #the worksheet already exists, only need to add any new data it found
-              mySheet= readWorksheetFromFile(propfilename,sheet=tabname,startCol=1,startRow=1,rownames=NULL,colTypes="character")#fixme if it is empty it will crash
+              mySheet= XLConnect::readWorksheetFromFile(propfilename,sheet=tabname,startCol=1,startRow=1,rownames=NULL,colTypes="character")#fixme if it is empty it will crash
               #             myrecodes=data.frame(mySheet[,1:ncol(mySheet)])
 
               concord=mySheet # temporarily switched off adding new data
@@ -144,7 +144,7 @@ reprojuice=function(dataname="data",ftype="xl",type="",method="quicker",onlyLoad
             }
             #
             if(myblock[1,1]==varname){
-              writeWorksheetToFile(propfilename,concord,tabname,styleAction=XLC$"STYLE_ACTION.NONE")##fixme so only does itonce for multiples
+              XLConnect::writeWorksheetToFile(propfilename,concord,tabname,styleAction=XLC$"STYLE_ACTION.NONE")##fixme so only does itonce for multiples
             }
 
           }
@@ -241,33 +241,33 @@ reprojuice=function(dataname="data",ftype="xl",type="",method="quicker",onlyLoad
       new_propsheet=data.frame(propsheet)
       kill<<-new_propsheet
     }
-    writeWorksheetToFile(propfilename,new_propsheet,"props",styleAction=XLC$"STYLE_ACTION.NONE")
+    XLConnect::writeWorksheetToFile(propfilename,new_propsheet,"props",styleAction=XLConnect::XLC$"STYLE_ACTION.NONE")
     # system(paste0("wmctrl -c ",propfilename," - LibreOffice Calc"), wait=FALSE)
 
-    wb <- loadWorkbook(propfilename, create = TRUE)
+    wb <- XLConnect::loadWorkbook(propfilename, create = TRUE)
 
     # Create a worksheet
-    createSheet(wb, name = "props")
+    XLConnect::createSheet(wb, name = "props")
 
     # Create a custom anonymous cell style
-    cs <- createCellStyle(wb)
+    cs <- XLConnect::createCellStyle(wb)
 
     # Specify the fill background color for the cell style created above
     # setFillBackgroundColor(cs, color = XLC$"COLOR.LIGHT_CORNFLOWER_BLUE")
 
     # Specify the fill foreground color
-    setFillForegroundColor(cs, color = XLC$"COLOR.LIGHT_CORNFLOWER_BLUE")
+    XLConnect::setFillForegroundColor(cs, color = XLConnect::XLC$"COLOR.LIGHT_CORNFLOWER_BLUE")
 
     # Specify the fill pattern
-    setFillPattern(cs, fill = XLC$"FILL.SOLID_FOREGROUND")
+    XLConnect:: setFillPattern(cs, fill = XLConnect::XLC$"FILL.SOLID_FOREGROUND")
 
     # Set the cell style created above for the top left cell (A1) in the
     # 'cellstyles' worksheet
-    setCellStyle(wb, formula=paste0("props!$A$1:$F$",1+nrow(propsheet)), cellstyle = cs)
-    setCellStyle(wb, formula=paste0("props!$A$1:$",LETTERS[1+ncol(propsheet)],"$1"), cellstyle = cs)
+    XLConnect:: setCellStyle(wb, formula=paste0("props!$A$1:$F$",1+nrow(propsheet)), cellstyle = cs)
+    XLConnect::setCellStyle(wb, formula=paste0("props!$A$1:$",LETTERS[1+ncol(propsheet)],"$1"), cellstyle = cs)
 
     # Save the workbook
-    saveWorkbook(wb)
+    XLConnect::saveWorkbook(wb)
 
 
     if(spreadsheet_path!="")browseURL(paste0(propfilename),browser=spreadsheet_path)
