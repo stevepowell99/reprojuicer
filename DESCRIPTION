@@ -1,0 +1,20 @@
+Package: reprojuicer
+Type: Package
+Title: Reproducibly recode, reorganise and label a dataset
+Version: 0.1
+Date: 2015-04-28
+Author: Steve Powell
+Maintainer: Steve Powell <steve@promente.org>
+Description: Provides an easy xls workbook for reproducibly organising a
+    dataset - reordering, renaming, recoding, providing longer and shorter
+    labels, switching easily between labels in multiple languages, calculating
+    new variables, grouping into blocks.
+License: GPL-2
+LazyData: TRUE
+Imports:
+	ggplot2,
+	XLConnect,
+	stringr
+Suggests:
+    knitr
+VignetteBuilder: knitr
