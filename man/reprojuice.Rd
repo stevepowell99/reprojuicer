@@ -4,8 +4,8 @@
 \alias{reprojuice}
 \title{Provides an easy xls workbook for reproducibly organising a dataset - reordering, renaming, recoding, providing longer and shorter labels, switching easily between labels in multiple languages, calculating new variables, grouping into blocks.}
 \usage{
-reprojuice(dataname = "data", ftype = "xl", type = "",
-  method = "quicker", onlyLoad = F, spreadsheet_path = "")
+reprojuice(dataname = "data", type = "", method = "quicker",
+  onlyLoad = F, spreadsheet_path = "")
 }
 \description{
 Main intro at the moment is the readme: \link{https://github.com/stevepowell99/reprojuicer}

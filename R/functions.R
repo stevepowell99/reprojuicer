@@ -11,8 +11,7 @@
 #' @name reprojuice
 #'
 #'
-#'
-reprojuice=function(dataname="data",ftype="xl",type="",method="quicker",onlyLoad=F,spreadsheet_path=""){
+reprojuice=function(dataname="data",type="",method="quicker",onlyLoad=F,spreadsheet_path=""){
   #/usr/bin/libreoffice
   if(onlyLoad){
     assign(paste0(dataname,".r"),readRDS(paste0(dataname,".r")),envir=.GlobalEnv)##reassign the new tidy colnames
@@ -413,7 +412,7 @@ make_fresh_propsheet=function(df,labnames=xc("varnames ncol level n1 newvarnames
 #' Simple wrapper for ggplot
 #' So you can print the labels instead of the varnames
 #'
-#' @param ... same as ggplot
+#' @param labs If you want to use attributes other than \code{label} for your labels, give it a list like \code{labs=list(x="otherattribute",y="yetanotherattribute"))}. By default, the attribute \code{label} is used.
 #' @return various things
 #'
 #'
@@ -422,15 +421,22 @@ make_fresh_propsheet=function(df,labnames=xc("varnames ncol level n1 newvarnames
 #' Or, because reprojuicer imports Hmisc, more conveniently:
 #' \code{label(mtcars$cyl)="cylinder"}
 #' \code{library(ggplot2);ggplotl(data=mtcars,aes(cyl,disp))+geom_point()}
+#' @examples
+#' attr(mtcars$disp,"labelb")="čćđž"
+#' attr(mtcars$disp,"label")="Displacement"
+#' ggplotl(data=mtcars,aes(disp))+geom_density()
+#' ggplotl(data=mtcars,aes(disp),labs=list(x="labelb"))+geom_density()
+#' ggplotl(data=mtcars,aes(gear,cyl,colour=disp),labs=list(colour="labelb"))+geom_point()
 #'
 #'
-#'
-ggplotl=function(...){
+ggplotl=function(...,labs=list()){
   plot=ggplot2::ggplot(...)
   dat=plot$data
   for(m in names(plot$mapping)){
     char=paste0(plot$mapping[m])
-    ml=attr(dat[,char],"label")
+    l=labs[[m]]
+    lab=ifelse(is.null(l),"label",l)
+    ml=attr(dat[,char],lab)
     plot$labels[m]=ml
   }
 

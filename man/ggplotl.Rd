@@ -5,10 +5,10 @@
 \title{Simple wrapper for ggplot
 So you can print the labels instead of the varnames}
 \usage{
-ggplotl(...)
+ggplotl(..., labs = list())
 }
 \arguments{
-\item{...}{same as ggplot}
+\item{labs}{If you want to use attributes other than \code{label} for your labels, give it a list like \code{labs=list(x="otherattribute",y="yetanotherattribute"))}. By default, the attribute \code{label} is used.}
 }
 \value{
 various things
@@ -23,5 +23,12 @@ Or, because reprojuicer imports Hmisc, more conveniently:
 \description{
 Simple wrapper for ggplot
 So you can print the labels instead of the varnames
+}
+\examples{
+attr(mtcars$disp,"labelb")="čćđž"
+attr(mtcars$disp,"label")="Displacement"
+ggplotl(data=mtcars,aes(disp))+geom_density()
+ggplotl(data=mtcars,aes(disp),labs=list(x="labelb"))+geom_density()
+ggplotl(data=mtcars,aes(gear,cyl,colour=disp),labs=list(colour="labelb"))+geom_point()
 }
 
