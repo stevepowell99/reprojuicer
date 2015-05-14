@@ -8,6 +8,9 @@ reprojuice(dataname = "data", type = "", method = "quicker",
   onlyLoad = F, spreadsheet_path = "")
 }
 \description{
+Also provides a function filter_keep_label which allows you to subset a data frame and still keep the labels and other attributes
+}
+\details{
 Main intro at the moment is the readme: \link{https://github.com/stevepowell99/reprojuicer}
 Note you can use raw_data$myvar in formula to refer to version of an earlier variable which has already been changed by a formula.
 Use label2 for another language, create more if you want

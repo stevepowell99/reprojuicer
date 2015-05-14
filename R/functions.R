@@ -1,12 +1,12 @@
-
-
 #' Provides an easy xls workbook for reproducibly organising a dataset - reordering, renaming, recoding, providing longer and shorter labels, switching easily between labels in multiple languages, calculating new variables, grouping into blocks.
 #'
+#'
+#' Also provides a function filter_keep_label which allows you to subset a data frame and still keep the labels and other attributes
 #'
 #' Main intro at the moment is the readme: \link{https://github.com/stevepowell99/reprojuicer}
 #' Note you can use raw_data$myvar in formula to refer to version of an earlier variable which has already been changed by a formula.
 #' Use label2 for another language, create more if you want
-#'
+#' @export
 #' @import XLConnect
 #' @name reprojuice
 #'
@@ -273,6 +273,7 @@ reprojuice=function(dataname="data",type="",method="quicker",onlyLoad=F,spreadsh
 
 
 
+    attr(current_data,"labels")=new_propsheet
     assign(paste0(dataname,".r"),current_data,envir=.GlobalEnv)# update raw_data adding new cols if necessary
 
     #     if(assigndata.r)assign(paste0("data.r"),current_data,envir=.GlobalEnv)# update raw_data adding new cols if necessary
@@ -280,19 +281,9 @@ reprojuice=function(dataname="data",type="",method="quicker",onlyLoad=F,spreadsh
 
     saveRDS(current_data,paste0(dataname,".r"))
 
-    #     s=lapply(specials,function(x) x=findr(att=x,equ="list",datafilename=dataname))
-    #     names(s)=specials
-    #     s<<-s
-    #     assign(paste0(dataname,".s"),s,envir=.GlobalEnv) #more general version when dealing with several datasets
-    #
-    #     saveRDS(s,paste0(dataname,".s"))#
-
-    #     blocklist=unlist(unique(lapply(current_data,function(i)attr(i,"block"))))
-    #     if(!is.na(blocklist))blocks<<-unlist(na.omit(blocklist))
-
-
 
     b<<-findr(equ="list",att="block",dat=current_data,datafilename=paste0(dataname,".r"))
+
 
     saveRDS(b,paste0(dataname,".b"))#
     assign(paste0(dataname,".b"),b,envir=.GlobalEnv) #more general version when dealing with several datasets
@@ -304,8 +295,9 @@ reprojuice=function(dataname="data",type="",method="quicker",onlyLoad=F,spreadsh
 
 }
 
-
-
+#' helps you find a fresh block
+#' @export
+#'
 findr=function(att="block",dat,equ="x",datafilename="",...){
   if(equ=="list") {
     l=unlist(unique(sapply(dat,attr,att)))
@@ -346,7 +338,7 @@ findr_inner=function(att="block",dat,equ="x",datafilename=""){
 }
 
 
-xc=function(str)stringr::str_split(str,' ')[[1]]
+xc=function(str,sepp=" ")stringr::str_split(str,sepp)[[1]]
 
 xmb=function(x,y="") if(!xexists(x))T else{ if(length(x)==0) TRUE  else if(class(x)=="data.frame") FALSE else if(is.na(x)) TRUE else if(is.null(x)) TRUE  else if(x==y) TRUE else FALSE}
 #true if missing or null or y, otherwise false. NOTE IT GIVES F IF IT IS ANY DATA FRAME, EVEN AN EMPTY ONE
@@ -408,22 +400,22 @@ make_fresh_propsheet=function(df,labnames=xc("varnames ncol level n1 newvarnames
 
 
 
-
 #' Simple wrapper for ggplot
 #' So you can print the labels instead of the varnames
-#'
-#' @param labs If you want to use attributes other than \code{label} for your labels, give it a list like \code{labs=list(x="otherattribute",y="yetanotherattribute"))}. By default, the attribute \code{label} is used.
-#' @return various things
-#'
-#'
 #' Set a label:
 #' \code{attr(mtcars$cyl,"label")="cylinder"}
 #' Or, because reprojuicer imports Hmisc, more conveniently:
 #' \code{label(mtcars$cyl)="cylinder"}
 #' \code{library(ggplot2);ggplotl(data=mtcars,aes(cyl,disp))+geom_point()}
+#'
+#' @param labs If you want to use attributes other than \code{label} for your labels, give it a list like \code{labs=list(x="otherattribute",y="yetanotherattribute"))}. By default, the attribute \code{label} is used.
+#' @return various things
+#' @export
+#'
 #' @examples
 #' attr(mtcars$disp,"labelb")="čćđž"
 #' attr(mtcars$disp,"label")="Displacement"
+#' library(reprojuicer)
 #' ggplotl(data=mtcars,aes(disp))+geom_density()
 #' ggplotl(data=mtcars,aes(disp),labs=list(x="labelb"))+geom_density()
 #' ggplotl(data=mtcars,aes(gear,cyl,colour=disp),labs=list(colour="labelb"))+geom_point()
@@ -443,4 +435,30 @@ ggplotl=function(...,labs=list()){
   plot
 }
 
-# library(XLConnect)
+
+
+#' Filter a dataset, keeping attributes - fix me what if attr assignment fails
+#' @param df A data frame you want to split
+#' @param split a vector which will filter the data frame. NA values replaced as FALSE
+#' @param addlabel A note you should add to the label attribute so that the filtering is explained in graphs etc
+#' @return The filtered data frame, usually with fewer rows. But the attributes of the variables are retained where possible.
+#' @export
+#'
+filter_keep_label=function(df,split,addlabel=" - subset"){
+  split[is.na(split)]=F
+  if(length(dim(df))>0){
+
+  dfn=df[split,]
+  for(n in colnames(df)){
+    attributes(dfn[,n])=attributes(df[,n])
+    attr(dfn[,n],"label")=paste0(attr(dfn[,n],"label"),addlabel)
+
+  }
+  } else {
+  dfn=df[split]
+    attributes(dfn)=attributes(df)
+    attr(dfn,"label")=paste0(attr(dfn,"label"),addlabel)
+  }
+  dfn
+}
+

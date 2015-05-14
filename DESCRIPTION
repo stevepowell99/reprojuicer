@@ -12,9 +12,9 @@ Description: Provides an easy xls workbook for reproducibly organising a
 License: GPL-2
 LazyData: TRUE
 Imports:
-	ggplot2,
 	XLConnect,
 	stringr
 Suggests:
+	ggplot2,
     knitr
 VignetteBuilder: knitr

@@ -3,7 +3,12 @@
 \name{ggplotl}
 \alias{ggplotl}
 \title{Simple wrapper for ggplot
-So you can print the labels instead of the varnames}
+So you can print the labels instead of the varnames
+Set a label:
+\code{attr(mtcars$cyl,"label")="cylinder"}
+Or, because reprojuicer imports Hmisc, more conveniently:
+\code{label(mtcars$cyl)="cylinder"}
+\code{library(ggplot2);ggplotl(data=mtcars,aes(cyl,disp))+geom_point()}}
 \usage{
 ggplotl(..., labs = list())
 }
@@ -12,21 +17,20 @@ ggplotl(..., labs = list())
 }
 \value{
 various things
-
-
+}
+\description{
+Simple wrapper for ggplot
+So you can print the labels instead of the varnames
 Set a label:
 \code{attr(mtcars$cyl,"label")="cylinder"}
 Or, because reprojuicer imports Hmisc, more conveniently:
 \code{label(mtcars$cyl)="cylinder"}
 \code{library(ggplot2);ggplotl(data=mtcars,aes(cyl,disp))+geom_point()}
 }
-\description{
-Simple wrapper for ggplot
-So you can print the labels instead of the varnames
-}
 \examples{
 attr(mtcars$disp,"labelb")="čćđž"
 attr(mtcars$disp,"label")="Displacement"
+library(reprojuicer)
 ggplotl(data=mtcars,aes(disp))+geom_density()
 ggplotl(data=mtcars,aes(disp),labs=list(x="labelb"))+geom_density()
 ggplotl(data=mtcars,aes(gear,cyl,colour=disp),labs=list(colour="labelb"))+geom_point()
